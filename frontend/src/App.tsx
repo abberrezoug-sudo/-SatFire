@@ -4,6 +4,7 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Too
 import { CircleMarker, MapContainer, Popup, TileLayer, useMapEvents } from "react-leaflet";
 import type { LatLngBounds } from "leaflet";
 import { fetchFiresByArea } from "./api";
+import StatisticsPage from "./StatisticsPage";
 import type { BoundingBox, Filters, FirePoint, FirmsSource } from "./types";
 import {
   averageFrp,
@@ -31,7 +32,7 @@ const SOURCES: FirmsSource[] = [
   "LANDSAT_NRT",
 ];
 
-type Page = "map" | "dashboard";
+type Page = "map" | "dashboard" | "statistics";
 
 function bboxFromBounds(bounds: LatLngBounds): BoundingBox {
   return {
@@ -59,6 +60,7 @@ function Navigation({ page, onPageChange }: { page: Page; onPageChange: (page: P
   const items = [
     { id: "map" as const, label: "Live Map", icon: Map },
     { id: "dashboard" as const, label: "Dashboard", icon: BarChart3 },
+    { id: "statistics" as const, label: "Statistics", icon: Activity },
   ];
 
   return (
@@ -444,8 +446,10 @@ export default function App() {
             onFilterChange={setFilters}
             onRefresh={loadFires}
           />
-        ) : (
+        ) : page === "dashboard" ? (
           <Dashboard fires={fires} count={count} loading={loading} error={error} lastUpdated={lastUpdated} />
+        ) : (
+          <StatisticsPage onNavigate={setPage} />
         )}
       </main>
     </div>
