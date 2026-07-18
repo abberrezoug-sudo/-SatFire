@@ -4,6 +4,7 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Too
 import { CircleMarker, MapContainer, Popup, TileLayer, useMapEvents } from "react-leaflet";
 import type { LatLngBounds } from "leaflet";
 import { fetchFiresByArea } from "./api";
+import LiveMapPage from "./LiveMapPage";
 import StatisticsPage from "./StatisticsPage";
 import type { BoundingBox, Filters, FirePoint, FirmsSource } from "./types";
 import {
@@ -428,6 +429,25 @@ export default function App() {
     void loadFires();
   }, [loadFires]);
 
+  if (page === "map") {
+    return (
+      <LiveMapPage
+        fires={fires}
+        count={count}
+        filters={filters}
+        loading={loading}
+        error={error}
+        onBboxChange={setBbox}
+        onFilterChange={setFilters}
+        onNavigate={setPage}
+      />
+    );
+  }
+
+  if (page === "statistics") {
+    return <StatisticsPage onNavigate={setPage} />;
+  }
+
   return (
     <div className="min-h-screen bg-night text-white lg:flex">
       <div className="fixed bottom-0 left-0 right-0 lg:sticky lg:top-0 lg:h-screen">
@@ -435,22 +455,7 @@ export default function App() {
       </div>
 
       <main className="min-h-screen flex-1 pb-[72px] lg:pb-0">
-        {page === "map" ? (
-          <LiveMap
-            fires={fires}
-            count={count}
-            filters={filters}
-            loading={loading}
-            error={error}
-            onBboxChange={setBbox}
-            onFilterChange={setFilters}
-            onRefresh={loadFires}
-          />
-        ) : page === "dashboard" ? (
-          <Dashboard fires={fires} count={count} loading={loading} error={error} lastUpdated={lastUpdated} />
-        ) : (
-          <StatisticsPage onNavigate={setPage} />
-        )}
+        <Dashboard fires={fires} count={count} loading={loading} error={error} lastUpdated={lastUpdated} />
       </main>
     </div>
   );
